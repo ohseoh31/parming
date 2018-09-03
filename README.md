@@ -12,9 +12,10 @@
 https://xn--c79as89aj0e29b77z.xn--3e0b707e/kor/whois/openAPI_KeyCre.jsp
 ```
 </br>
+
 3. mysql DB to csv file
 
-> - SHOW VARIABLES LIKE "secure_file_priv";
+> SHOW VARIABLES LIKE "secure_file_priv";
 
 ```
 SELECT * FROM [table Name]
