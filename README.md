@@ -5,5 +5,5 @@
 </br>
 - 수많은 파일을 다운로드하는경우 urlopen, urllib 사용하는것이 효율적임
 
-</br> 2.
+</br> 2. Whois open API 사용 
 
