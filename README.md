@@ -1,5 +1,4 @@
-# parming
-
+# pharming
 
 1. selenium을 사용한 웹페이지 접근 및 파일 다운로드
 ```
