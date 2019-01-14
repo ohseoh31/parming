@@ -1,170 +1,80 @@
-from selenium import webdriver
-import os
-import zipfile
-import re
-import parming.dbquery
-
-
-'''
-서버 (http://107.174.85.141/cert)
-1. 피해자의 일련번호 - 피해시각(서버에 피해자의 공인인증서가 업로드된 시간)
-- 국가코드
-
-- 피해자의 이름
-- 은행명
-- 계좌번호
-- IP주소
-'''
-
-
-'''
-val_at = re.findall(find_value_at, text)
-
-            if val != [] and val_at == []:
-                count +=1
-                self.val_List.append([count, val[0][0].upper(), val[0][1].upper()])
-'''
+################################################################################
+# Copyright (Python) taegyu <https://github.com/ohseoh31>                      #
+# @author taegue (ohseoh31@github.com) bob7 df                                 #
+# @brief  youtube mp4 file download code with python                           #
+# using command : python3 -p 1 or 0                                            #
+#                 python3 -i "unzip_folder_path" [--input="unzip_folder_path"] #
+################################################################################
+import sys
+import getopt
+import dbquery
+import work
 
 
 
 
-
-def unZip(fileName):
-    #print("fileName %s" % (fileName))
-    unzip = zipfile.ZipFile(fileName)
-
-    # cert_list = []
-
-    # print (fileName)
-    # print ()
-    unzip.extractall("out\\")
-
-    fp = open('out\\signCert.cert')
-    text = fp.readline()
-
-    # print(text)
-    cert_list = find_people_info(text)
-    cert_list.append(fileName.split("\\")[2][:-4])
-
-    timeinfo = find_ip(fileName.split("\\")[2])
-    cert_list.append(timeinfo)
+# help alert
+def help():
+    print ("print help usage")
+    print ("[-p] is proxy option and download cert")
+    print ("    use proxy 1")
+    print ("    None use proxy 0")
+    print ("[-i][--input] is input cert info insert databse path")
+    print ("[-h][--help] is help option")
+    return 
+ 
+def noOption():
+    print ('print help usage')
+    print ('[-h][--help] command input')
 
 
-    #os.system("del .\\out\\signCert.cert")
-    return cert_list
-    #print('unzip')
-#
-# /html/body/table/fileName.split("\\")[2][:-3]tbody/tr[4]/td[2]/a
-# /html/body/table/tbody/tr[5]/td[2]/a
-# /html/body/table/tbody/tr[6]/td[2]/a
-
-
-def find_ip(ip):
-    fp =open('ipinfo.txt','r')
-
-    while (True):
-        iptime = fp.readline()
-        #print (iptime)
-        #print (iptime.split('\t'))
-        ip_name = iptime.split('\t')[0]
-        if (ip_name == ip):
-            fp.close()
-
-            return iptime.split('\t')[1]
-
-
-def selinumDownload():
-    driver = webdriver.Chrome()
-    driver.get("http://107.174.85.141/cert/")
-
-    i = 4
-    while True:
-        try:
-            download_url = '/html/body/table/tbody/tr[' + str(
-                i) + ']/td[2]/a'
-            driver.find_element_by_xpath(download_url).click()
-            i = i+1
-        except :
-            print("end")
-
-
-
-
-#공인인증서 정보 추출
-def find_people_info(text):
-    #print (text)
-    reg_info = '^cn=([가-힣]+)\(\)([0-z]+),ou=([a-zA-Z]+),ou=([a-zA-Z]+),o=([a-zA-Z]+),c=([a-zA-Z]+)'
-
-    cert_value = re.findall(reg_info, text)
-
-    '''
-        def findIP_time(fileName(ip정보))
-        return type
-        ip data
-        date data
-    '''
-    #Name 계좌번호
-    cert_list =[]
-
-    for i in range(0, len(cert_value[0])):
-        cert_list.append(cert_value[0][i])
-
-    # print (cert_list)
-    return cert_list
-    #sql_list.append()
-
-
-def search(dirname):
-    sql_insertList =[]
-    count = 0
+def main():
     try:
-        filenames = os.listdir(dirname)
-        #print (len(filenames))
-        #zzzexit(1)
-        for filename in filenames:
-            full_filename = os.path.join(dirname, filename)
-            if os.path.isdir(full_filename):
-                search(full_filename)
-            else:
-                ext = os.path.splitext(full_filename)[-1]
-                if ext == '.zip':
+    # 여기서 입력을 인자를 받는 파라미터는 단일문자일 경우 ':' 긴문자일경우 '='을끝에 붙여주면됨
+        opts, args = getopt.getopt(sys.argv[1:],"p:i:",["input=","help"])
+    
+    except getopt.GetoptError as err:
+        print (str(err))
+        help()
+        sys.exit(1)
 
-                    #unzip file
-                    cert = unZip(full_filename)
-                    sql_insertList.append(cert)
-                    count = count + 1
-                    if len(sql_insertList) >= 2000 or count >= len(filenames):
-                        # print (sql_insertList)
-                        parming.dbquery.inputDB(sql_insertList)
-                        sql_insertList = []
+    proxy_option = 0
+    cert_path = None
+    
+    if opts == [] :
+        #noOption()
+        help()
+        sys.exit(1)
 
-    except PermissionError:
-        print ("permission Denided")
-        pass
+    for opt,arg in opts:
+
+        if (opt == '-p'):
+            '''
+                using selinum download zip file
+            '''
+            proxy_option = arg
+            work.selinumDownload(proxy_option)
+            sys.exit(1)
+        elif (opt == '-i' or opt =='--input'):
+            cert_path = arg
+            '''
+                unzip and insert data into database
+            '''
+            work.search(cert_path)
+            dbquery.inputIPDB()
+            sys.exit(1)
+        elif ( opt == "-h") or ( opt == "--help"):
+            help()
+            sys.exit(1)
 
 
 if __name__ == "__main__":
     '''
         using selinum download zip file
     '''
-    selinumDownload()
+    main()
 
-
-    '''
-         copy Download/ipfiles to .\\files
-    '''
-    dirname = ".\\files"
-    #dirname = "C:\\Users\\ohseo\\Downloads\\files
-
-    '''
-         unzip and insert data into database
-    '''
-    search(dirname)
-
-    '''
-        insert into database ipInfo
-    '''
-    parming.dbquery.inputIPDB()
+  
 
 
 
