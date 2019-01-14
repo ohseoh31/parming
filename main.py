@@ -69,8 +69,5 @@ def main():
 
 
 if __name__ == "__main__":
-    '''
-        using selinum download zip file
-    '''
     main()
 
