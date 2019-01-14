@@ -73,26 +73,4 @@ if __name__ == "__main__":
         using selinum download zip file
     '''
     main()
-  
-
-
-
-
-
-
-
-
-
-
-
-'''
-    fileName = 'signCert.cert'
-    sql_list = []
-
-    cert_list = find_people_info(fileName)
-
-    sql_list.append(cert_list)
-    inputDB(sql_list)
-'''
-
 
