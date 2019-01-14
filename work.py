@@ -28,6 +28,7 @@ def unZip(fileName):
     return cert_list
 
 def find_ip(ip):
+    #IP정보 비교
     fp =open('ipinfo.txt','r',encoding='UTF8')
     while (True):
         iptime = fp.readline()
@@ -38,6 +39,7 @@ def find_ip(ip):
             return iptime.split('\t')[1]
 
 def get_proxies():
+    #외부 IP로 변경을 위한 Proxy 사용
     url = 'https://free-proxy-list.net/'
     response = requests.get(url)
     parser = fromstring(response.text)
@@ -49,7 +51,7 @@ def get_proxies():
     return proxies
 
 def selinumDownload(prox_flag):
-    
+    #사이트 정보 다운로드
     url = "[url]"
     ipcheck_url = 'https://httpbin.org/ip'
 
@@ -99,9 +101,10 @@ def selinumDownload(prox_flag):
                 except :
                     print("end")
 
-#공인인증서 정보 추출
+
 def find_people_info(text):
-	'''
+    #공인인증서 정보 추출	
+    '''
         return type
         ['name', '83230778832671167227', 'woori', 'personal', 'yessign', 'country']
     '''
@@ -119,6 +122,7 @@ def find_people_info(text):
     return cert_list
 
 def search(dirname):
+    #다운로드 받은 파일 압축 해제 및 DB저장
     sql_insertList =[]
     count = 0
     try:
